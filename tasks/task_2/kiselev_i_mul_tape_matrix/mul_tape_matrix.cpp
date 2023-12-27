@@ -102,11 +102,11 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
         }
 
         MPI_Send(locVecB.data(), static_cast<int>(locVecB.size()),
-            MPI_INT, recv, i, MPI_COMM_WORLD);
+            MPI_INT, snd, i, MPI_COMM_WORLD);
 
         MPI_Status status;
         MPI_Recv(locVecB.data(), static_cast<int>(locVecB.size()),
-            MPI_INT, snd, i, MPI_COMM_WORLD, &status);
+            MPI_INT, recv, i, MPI_COMM_WORLD, &status);
     }
 
     std::vector<int> resMatrix(n * n, 0);
