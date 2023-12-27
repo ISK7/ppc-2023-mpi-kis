@@ -1,5 +1,5 @@
 // Copyright 2023 Kiselev Igor
-#include "vector_sum.h"
+#include "task_1/kiselev_i_vector_sum/vector_sum.h"
 
 int sumSeq(const std::vector<int>& vec) {
     int total = 0;
