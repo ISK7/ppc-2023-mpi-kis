@@ -1,5 +1,5 @@
 // Copyright 2023 Kiselev Igor
-#include "./vector_sum.h"
+#include "tasks/task_1/kiselev_i_vector_sum/vector_sum.h"
 
 int sumSeq(const std::vector<int>& vec) {
     int total = 0;
@@ -51,4 +51,4 @@ int generateRandomNumbers(int min, int max) {
     return randomNumber;
 }
 
-//kulaev_e
+// kiselev_i
