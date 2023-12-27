@@ -68,10 +68,10 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
         MPI_Status status;
         MPI_Recv(locVecA.data(), static_cast<int>(
             locSize - reminder * m),
-            MPI_INT, rankProc, 1, MPI_COMM_WORLD, &status);
+            MPI_INT, chain_s * m, 1, MPI_COMM_WORLD, &status);
         MPI_Recv(locVecB.data(), static_cast<int>(
             locSize - reminder * m),
-            MPI_INT, rankProc, 2, MPI_COMM_WORLD, &status);
+            MPI_INT, chain_s * m, 2, MPI_COMM_WORLD, &status);
     }
     locVecB[locSize] = rankProc == 0 ? 0 : rankProc * chain_s + reminder;
 
