@@ -94,7 +94,7 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
             (rankProc * chain_s + reminder) * n;
         for (int j = 0; j < tmpRes.size(); j++) {
             int row =
-                locVecB[locSize] + j % local_n;
+                locVecB[locSize] + j % locRow;
             int col =
                 (j / locRow) * n;
 
