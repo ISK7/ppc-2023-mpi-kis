@@ -64,8 +64,7 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
             locVecB[i] = b[row + col];
             locVecA[i] = a[i];
         }
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(locVecA.data(), static_cast<int>(
             locSize - reminder * m),
