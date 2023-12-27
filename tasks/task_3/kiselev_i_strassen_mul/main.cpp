@@ -118,6 +118,9 @@ TEST(strassen_mul_test, test_10x10_of_random) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
+    std::random_device dev;
+    std::mt19937 gen(dev());
+
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
     for (int i = 0; i < N; i++) {
@@ -140,12 +143,12 @@ TEST(strassen_mul_test, test_10x10_of_random) {
 
 
 int main(int argc, char** argv) {
-    // ::testing::InitGoogleTest(&argc, argv);
-    // ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+    ::testing::InitGoogleTest(&argc, argv);
+    ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
 
-    // if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
-    //    MPI_Abort(MPI_COMM_WORLD, -1);
-    // result = RUN_ALL_TESTS();
-    // MPI_Finalize();
+    if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
+       MPI_Abort(MPI_COMM_WORLD, -1);
+    result = RUN_ALL_TESTS();
+    MPI_Finalize();
     return 0;
 }
