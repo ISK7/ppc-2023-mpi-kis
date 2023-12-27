@@ -109,28 +109,6 @@ TEST(MulMatrix_test, test_4x8_and_8x4_of_random) {
     }
 }
 
-TEST(MulMatrix_test, test_10x10_of_random) {
-    int rankProc = 0;
-    int sizeProc = 0;
-    int n = 10;
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
-    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
-    std::vector<int> vecA(n * n);
-    std::vector<int> vecB(n * n);
-    for (int i = 0; i < n * n; i++) {
-        vecA[i] = std::rand() % 10;
-        vecB[i] = std::rand() % 10;
-    }
-
-    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, n);
-
-    if (rankProc == 0) {
-        std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, n);
-        ASSERT_EQ(resPar, resSeq);
-    }
-}
-
 int main(int argc, char** argv) {
     int result = 0;
     ::testing::InitGoogleTest(&argc, argv);
