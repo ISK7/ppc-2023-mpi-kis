@@ -88,12 +88,15 @@ TEST(strassen_mul_test, test_4x4_of_random) {
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
+    std::random_device dev;
+    std::mt19937 gen(dev());
+
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            A[i][j] = rand_r() % 10;
-            B[i][j] = rand_r() % 10;
+            A[i][j] = gen() % 10;
+            B[i][j] = gen() % 10;
         }
     }
 
@@ -119,8 +122,8 @@ TEST(strassen_mul_test, test_10x10_of_random) {
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            A[i][j] = rand_r() % 10;
-            B[i][j] = rand_r() % 10;
+            A[i][j] = gen() % 10;
+            B[i][j] = gen() % 10;
         }
     }
 
