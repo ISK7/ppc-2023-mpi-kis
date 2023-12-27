@@ -4,6 +4,7 @@
 #include <mpi.h>
 #include <iostream>
 #include <vector>
+#include <stdlib.h>
 #include <boost/core/invoke_swap.hpp>
 
 std::vector<std::vector<double>> subMatrix(const std::vector<std::vector<double>>& original,

@@ -7,8 +7,8 @@ TEST(strassen_mul_test, test_2x2_of_1) {
     int sizeProc = 0;
     int N = 2;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
@@ -33,8 +33,8 @@ TEST(strassen_mul_test, test_4x4_of_1) {
     int sizeProc = 0;
     int N = 4;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
@@ -59,8 +59,8 @@ TEST(strassen_mul_test, test_4x4_of_progression) {
     int sizeProc = 0;
     int N = 4;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
@@ -85,8 +85,8 @@ TEST(strassen_mul_test, test_4x4_of_random) {
     int sizeProc = 0;
     int N = 4;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
@@ -112,8 +112,8 @@ TEST(strassen_mul_test, test_10x10_of_random) {
     int sizeProc = 0;
     int N = 10;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+    MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
 
     std::vector<std::vector<double>> A(N, std::vector<double>(N));
     std::vector<std::vector<double>> B(N, std::vector<double>(N));
@@ -137,12 +137,12 @@ TEST(strassen_mul_test, test_10x10_of_random) {
 
 
 int main(int argc, char** argv) {
-    //::testing::InitGoogleTest(&argc, argv);
-    //::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+    // ::testing::InitGoogleTest(&argc, argv);
+    // ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
 
-    //if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
+    // if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
     //    MPI_Abort(MPI_COMM_WORLD, -1);
-    //result = RUN_ALL_TESTS();
-    //MPI_Finalize();
+    // result = RUN_ALL_TESTS();
+    // MPI_Finalize();
     return 0;
 }
