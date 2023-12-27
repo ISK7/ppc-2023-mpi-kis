@@ -25,46 +25,95 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
     int chain_s = n / sizeProc;
     int reminder = n % sizeProc;
 
-    MPI_Bcast(b.data(), m * n, MPI_INT, 0, MPI_COMM_WORLD);
-
     if (rankProc == 0) {
-        if (chain_s > 0) {
-            for (int proc = 1; proc < sizeProc; proc++) {
-                MPI_Send(a.data() + reminder * m + proc * chain_s * m,
-                m * chain_s, MPI_INT, proc, 0, MPI_COMM_WORLD);
+        for (int proc = 1; proc < chain_s; proc++) {
+            int chain_vecA = proc * chain_s * m;
+            int chain_vecB = proc * chain_s;
+
+            if (reminder != 0) {
+                chain_vecA += reminder * m;
+                chain_vecB += reminder;
             }
+
+            std::vector<int> sendB(chain_s * m, 0);
+            for (int i = 0; i < sendB.size(); i++) {
+                int row = i % chain_s;
+                int col = (i / chain_s) * n;
+
+                sendB[i] =
+                    b[chain_vecB + row + col];
+            }
+
+            MPI_Send(a.data() + chain_vecA,
+                chain_s * m,
+                MPI_INT, proc, 1, MPI_COMM_WORLD);
+            MPI_Send(sendB.data(), sendB.size(),
+                MPI_INT, proc, 2, MPI_COMM_WORLD);
         }
     }
+    int locSize = (chain_s + reminder) * m;
 
-    std::vector<int> locVec;
+    std::vector<int> locVecA(locSize, 0);
+    std::vector<int> locVecB(locSize + 1, 0);
 
     if (rankProc == 0) {
-        locVec = std::vector<int>(a.begin(), a.begin() + chain_s * m + reminder * m);
-    } else {
-        if (chain_s > 0) {
-            locVec.resize(m * chain_s);
-            MPI_Status status;
-            MPI_Recv(locVec.data(), m * chain_s, MPI_INT, 0, 0, MPI_COMM_WORLD, &status);
+        for (int i = 0; i < locSize; i++) {
+            int row = i % (chain_s + reminder);
+            int col = (i / (chain_s + reminder))
+                * n;
+            locVecB[i] = b[row + col];
+            locVecA[i] = a[i];
         }
     }
+    else {
+        MPI_Status status;
+        MPI_Recv(locVecA.data(), static_cast<int>(
+            locSize - reminder * m),
+            MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
+        MPI_Recv(locVecB.data(), static_cast<int>(
+            locSize - reminder * m),
+            MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
+    }
+    locVecB[locSize] = rankProc == 0 ? 0 : rankProc * chain_s + reminder;
 
-    std::vector<int> locRes((locVec.size() / m) * (locVec.size() / m));
-    locRes = SeqMulMatrix(locVec, b, locVec.size() / m, m);
-    std::vector<int> resMatrix(n * n);
-    std::vector<int> send_counts(sizeProc);
-    std::vector<int> displs(sizeProc);
+    std::vector<int> locRes(n * n, 0);
 
-    for (int i = 0; i < sizeProc; i++) {
-        send_counts[i] = (i == 0) ? chain_s * m + reminder * m : chain_s * m;
-        displs[i] = (i == 0) ? 0 : (displs[i - 1] + send_counts[i - 1]);
+    int snd = (rankProc + 1) % chain_s;
+    int recv = (rankProc - 1) < 0 ? chain_s - 1 : rankProc - 1;
+
+    for (int i = 0; i < chain_s; i++) {
+        int locRow =
+            rankProc == 0 ? chain_s + reminder : chain_s;
+        int locCol =
+            (rankProc + i) % chain_s == 0 ? chain_s + reminder : chain_s;
+
+        std::vector<int> tmpRes =
+            SeqMulMatrix(locVecA, locVecB,
+                locRow, locCol);
+
+        int step_matrix = rankProc == 0 ? 0 :
+            (rankProc * chain_s + reminder) * n;
+        for (int j = 0; j < tmpRes.size(); j++) {
+            int row =
+                locVecB[locSize] + j % local_n;
+            int col =
+                (j / locRow) * n;
+
+            locRes[step_matrix + row + col] += tmpRes[j];
+        }
+
+        MPI_Send(locVecB.data(), static_cast<int>(locVecB.size()),
+            MPI_INT, recv, i, MPI_COMM_WORLD);
+
+        MPI_Status status;
+        MPI_Recv(locVecB.data(), static_cast<int>(locVecB.size()),
+            MPI_INT, snd, i, MPI_COMM_WORLD, &status);
     }
 
-    MPI_Gatherv(locRes.data(), send_counts[rankProc], MPI_INT, resMatrix.data(),
-    send_counts.data(), displs.data(), MPI_INT, 0, MPI_COMM_WORLD);
-    if (rankProc == 0) {
-        return resMatrix;
-    } else {
-        return std::vector<int> {};
-    }
+    std::vector<int> resMatrix(n * n, 0);
+    MPI_Reduce(locRes.data(), resMatrix.data(), static_cast<int>(locRes.size()),
+        MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    return resMatrix;
 }
 // kiselev_i
