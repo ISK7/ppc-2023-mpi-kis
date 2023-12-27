@@ -6,7 +6,8 @@
 #include <vector>
 #include <boost/core/invoke_swap.hpp>
 
-std::vector<std::vector<double>> subMatrix(const std::vector<std::vector<double>>& original, int subi, int subj, int size);
+std::vector<std::vector<double>> subMatrix(const std::vector<std::vector<double>>& original,
+    int subi, int subj, int size);
 std::vector<std::vector<double>> matrix_addition(const std::vector<std::vector<double>>& A,
     const std::vector<std::vector<double>>& B);
 std::vector<std::vector<double>> matrix_subtraction(const std::vector<std::vector<double>>& A,
