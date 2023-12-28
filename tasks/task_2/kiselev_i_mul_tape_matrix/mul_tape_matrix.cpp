@@ -16,7 +16,7 @@ std::vector<int> SeqMulMatrix(const std::vector<int>& a, const std::vector<int>&
     return resMatrix;
 }
 
-std::vector<int> ParMulMatrix(const std::vector<int> *a, const std::vector<int> *b, int an, int am) {
+std::vector<int> ParMulMatrix(std::vector<int> *a, std::vector<int> *b, int an, int am) {
     std::vector<int>& mat_a = *a;
     std::vector<int>& mat_b = *b;
     int sizeProc, rankProc;
