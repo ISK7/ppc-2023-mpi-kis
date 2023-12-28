@@ -103,10 +103,10 @@ TEST(strassen_mul_test, test_4x4_of_random) {
     }
 }
 
-TEST(strassen_mul_test, test_10x10_of_random) {
+TEST(strassen_mul_test, test_16x16_of_random) {
     int rankProc = 0;
     int sizeProc = 0;
-    int N = 10;
+    int N = 16;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
