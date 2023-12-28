@@ -66,8 +66,8 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
 TEST(MulMatrix_test, test_3x4_and_4x3_of_progression) {
     int rankProc = 0;
     int sizeProc = 0;
-    int n = 3;
-    int m = 4;
+    int n = 4;
+    int m = 3;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
