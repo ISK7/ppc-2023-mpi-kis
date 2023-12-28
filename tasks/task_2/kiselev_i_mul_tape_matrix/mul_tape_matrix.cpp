@@ -13,6 +13,7 @@ std::vector<int> SeqMulMatrix(const std::vector<int> &a, const std::vector<int> 
     }
     return resMatrix;
 }
+
 std::vector<int> ParMulMatrix(std::vector<int> *SMM, std::vector<int> *PMM, int n, int m) {
     std::vector<int> &a = *SMM;
     std::vector<int> &b = *PMM;
@@ -87,17 +88,17 @@ std::vector<int> ParMulMatrix(std::vector<int> *SMM, std::vector<int> *PMM, int 
 
         std::vector<int> tmpRes =
             SeqMulMatrix(locVecA, locVecB,
-            locRow, locCol);
+            locRow, m);
 
-        int chainA = rankProc == 0 ? 0 :
+        int chainRes = rankProc == 0 ? 0 :
             (rankProc * chain_s + reminder) * n;
         for (int j = 0; j < tmpRes.size(); j++) {
             int row =
-                locVecB[locSize] + j % locRow;
+                locVecB[locSize] + j % locCol;
             int col =
-                (j / locRow) * n;
+                (j / locCol) * n;
 
-            locRes[chainA + row + col] += tmpRes[j];
+            locRes[chainRes + row + col] += tmpRes[j];
         }
 
         MPI_Send(locVecB.data(), static_cast<int>(locVecB.size()),
