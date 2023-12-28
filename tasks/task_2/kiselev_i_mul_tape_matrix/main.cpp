@@ -20,7 +20,7 @@ TEST(MulMatrix_test, test_3x3_of_1) {
     }
     std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
     if (rankProc == 0) {
-        std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m);
+        std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
         ASSERT_EQ(resPar, resSeq);
     }
 }
@@ -40,7 +40,7 @@ TEST(MulMatrix_test, test_3x3_of_progression) {
         vecB[i] = i;
     }
 
-    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m);
+    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
         std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
@@ -60,7 +60,7 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
     std::vector<int> vecA{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
     std::vector<int> vecB{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
-    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m);
+    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
         std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
@@ -83,7 +83,7 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_progression) {
         vecB[i] = i;
     }
 
-    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m);
+    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
         std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
@@ -106,7 +106,7 @@ TEST(MulMatrix_test, test_4x6_and_6x4_of_progression) {
         vecB[i] = i;
     }
 
-    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m);
+    std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
         std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);

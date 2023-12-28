@@ -17,7 +17,6 @@ std::vector<int> SeqMulMatrix(const std::vector<int>& a, const std::vector<int>&
 }
 
 std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b, int an, int am) {
-
     int sizeProc, rankProc;
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
@@ -69,8 +68,7 @@ std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b
             locB[i] = b[chain_n + chain_m];
             locA[i] = a[i];
         }
-    }
-    else {
+    } else {
         MPI_Status status;
         MPI_Recv(locA.data(), static_cast<int>(lSize - reminder * am),
             MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
