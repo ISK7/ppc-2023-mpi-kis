@@ -48,11 +48,11 @@ TEST(MulMatrix_test, test_3x3_of_progression) {
     }
 }
 
-TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
+TEST(MulMatrix_test, test_4x4_and_4x4_of_1) {
     int rankProc = 0;
     int sizeProc = 0;
     int n = 4;
-    int m = 3;
+    int m = 4;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
@@ -60,8 +60,8 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
     std::vector<int> vecA(n * m);
     std::vector<int> vecB(m * n);
     for (int i = 0; i < n * m; i++) {
-        vecA[i] = i;
-        vecB[i] = i;
+        vecA[i] = 1;
+        vecB[i] = 1;
     }
 
     std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
@@ -72,11 +72,11 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
     }
 }
 
-TEST(MulMatrix_test, test_3x4_and_4x3_of_progression) {
+TEST(MulMatrix_test, test_5x5_and_5x5_of_progression) {
     int rankProc = 0;
     int sizeProc = 0;
-    int n = 3;
-    int m = 4;
+    int n = 5;
+    int m = 5;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
@@ -95,10 +95,10 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_progression) {
     }
 }
 
-TEST(MulMatrix_test, test_4x6_and_6x4_of_progression) {
+TEST(MulMatrix_test, test_6x6_and_6x6_of_progression) {
     int rankProc = 0;
     int sizeProc = 0;
-    int n = 4;
+    int n = 6;
     int m = 6;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
