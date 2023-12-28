@@ -1,5 +1,5 @@
 // Copyright 2023 Kiselev Igor
-#include "task_2/kiselev_i_mul_tape_matrix/mul_tape_matrix.h"
+#include "mul_tape_matrix.h"
 
 std::vector<int> SeqMulMatrix(const std::vector<int> &a, const std::vector<int> &b, int n, int m) {
     std::vector<int> resMatrix(n * n);
@@ -13,7 +13,7 @@ std::vector<int> SeqMulMatrix(const std::vector<int> &a, const std::vector<int> 
     }
     return resMatrix;
 }
-std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, int n, int m) {
+std::vector<int> ParMulMatrix(std::vector<int> *SMM, std::vector<int> *PMM, int n, int m) {
     std::vector<int> &a = *SMM;
     std::vector<int> &b = *PMM;
 
@@ -26,7 +26,7 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
     int reminder = n % sizeProc;
 
     if (rankProc == 0) {
-        for (int proc = 1; proc < chain_s; proc++) {
+        for (int proc = 1; proc < sizeProc; proc++) {
             int chain_vecA = proc * chain_s * m;
             int chain_vecB = proc * chain_s;
 
@@ -59,8 +59,7 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
     if (rankProc == 0) {
         for (int i = 0; i < locSize; i++) {
             int row = i % (chain_s + reminder);
-            int col = (i / (chain_s + reminder))
-                * n;
+            int col = (i / (chain_s + reminder)) * n;
             locVecB[i] = b[row + col];
             locVecA[i] = a[i];
         }
@@ -68,29 +67,29 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
         MPI_Status status;
         MPI_Recv(locVecA.data(), static_cast<int>(
             locSize - reminder * m),
-            MPI_INT, chain_s * m, 1, MPI_COMM_WORLD, &status);
+            MPI_INT, 0, 1, MPI_COMM_WORLD, &status);
         MPI_Recv(locVecB.data(), static_cast<int>(
             locSize - reminder * m),
-            MPI_INT, chain_s * m, 2, MPI_COMM_WORLD, &status);
+            MPI_INT, 0, 2, MPI_COMM_WORLD, &status);
     }
     locVecB[locSize] = rankProc == 0 ? 0 : rankProc * chain_s + reminder;
 
     std::vector<int> locRes(n * n, 0);
 
-    int snd = (rankProc + 1) % chain_s;
-    int recv = (rankProc - 1) < 0 ? chain_s - 1 : rankProc - 1;
+    int snd = (rankProc + 1) % sizeProc;
+    int recv = (rankProc - 1) < 0 ? sizeProc - 1 : rankProc - 1;
 
-    for (int i = 0; i < chain_s; i++) {
+    for (int i = 0; i < sizeProc; i++) {
         int locRow =
             rankProc == 0 ? chain_s + reminder : chain_s;
         int locCol =
-            (rankProc + i) % chain_s == 0 ? chain_s + reminder : chain_s;
+            (rankProc + i) % sizeProc == 0 ? chain_s + reminder : chain_s;
 
         std::vector<int> tmpRes =
             SeqMulMatrix(locVecA, locVecB,
-                locRow, locCol);
+            locRow, locCol);
 
-        int step_matrix = rankProc == 0 ? 0 :
+        int chainA = rankProc == 0 ? 0 :
             (rankProc * chain_s + reminder) * n;
         for (int j = 0; j < tmpRes.size(); j++) {
             int row =
@@ -98,15 +97,15 @@ std::vector<int> ParMulMatrix(std::vector<int> * SMM, std::vector<int> * PMM, in
             int col =
                 (j / locRow) * n;
 
-            locRes[step_matrix + row + col] += tmpRes[j];
+            locRes[chainA + row + col] += tmpRes[j];
         }
 
         MPI_Send(locVecB.data(), static_cast<int>(locVecB.size()),
-            MPI_INT, snd, i, MPI_COMM_WORLD);
+            MPI_INT, recv, i, MPI_COMM_WORLD);
 
         MPI_Status status;
         MPI_Recv(locVecB.data(), static_cast<int>(locVecB.size()),
-            MPI_INT, recv, i, MPI_COMM_WORLD, &status);
+            MPI_INT, snd, i, MPI_COMM_WORLD, &status);
     }
 
     std::vector<int> resMatrix(n * n, 0);
