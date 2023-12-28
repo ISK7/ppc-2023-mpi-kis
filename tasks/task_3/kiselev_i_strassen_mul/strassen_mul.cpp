@@ -1,126 +1,104 @@
 // Copyright 2023 Kiselev Igor
 #include "task_3/kiselev_i_strassen_mul/strassen_mul.h"
 
-std::vector<std::vector<double>> matrix_addition(const std::vector<std::vector<double>> &A,
-    const std::vector<std::vector<double>> &B) {
-    int n = A.size();
-    std::vector<std::vector<double>> C(n, std::vector<double>(n));
+std::vector<std::vector<double>> sumMatrix(const std::vector<std::vector<double>> &sumA,
+    const std::vector<std::vector<double>> &sumB, int size, bool sign) {
+    std::vector<std::vector<double>> resMatrix(size, std::vector<double>(size, 0));
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            C[i][j] = A[i][j] + B[i][j];
-        }
-    }
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+            resMatrix[i][j] = sign ? sumA[i][j] + sumB[i][j] : sumA[i][j] - sumB[i][j];
 
-    return C;
+    return resMatrix;
 }
 
-std::vector<std::vector<double>> matrix_subtraction(const std::vector<std::vector<double>>& A,
-    const std::vector<std::vector<double>>& B) {
-    int n = A.size();
-    std::vector<std::vector<double>> C(n, std::vector<double>(n));
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            C[i][j] = A[i][j] - B[i][j];
-        }
-    }
-
-    return C;
-}
-
-std::vector<std::vector<double>> matrix_multiplication(const std::vector<std::vector<double>>& A,
-    const std::vector<std::vector<double>>& B) {
-    int n = A.size();
-    std::vector<std::vector<double>> C(n, std::vector<double>(n));
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            for (int k = 0; k < n; k++) {
-                C[i][j] += A[i][k] * B[k][j];
-            }
-        }
-    }
-
-    return C;
-}
-
-std::vector<std::vector<double>> subMatrix(const std::vector<std::vector<double>>& original,
+std::vector<std::vector<double>> subMatrix(const std::vector<std::vector<double>> &original,
     int subi, int subj, int size) {
+
     int newSize = size / 2;
     std::vector<std::vector<double>> subMatrix(newSize, std::vector<double>(newSize, 0));
 
-    for (int i = 0; i < newSize; i++)
-        for (int j = 0; j < newSize; j++)
-            subMatrix[i][j] = original[i + (subi - 1) * newSize][j + (subi - 1) * newSize];
-
+    for (int j = 0; j < newSize; j++)
+        for (int i = 0; i < newSize; i++)
+            subMatrix[i][j] = original[i + (subi - 1) * newSize][j + (subj - 1) * newSize];
     return subMatrix;
 }
 
-std::vector<std::vector<double>> merge_matrix(const std::vector<std::vector<double>>& C11,
-                                              const std::vector<std::vector<double>>& C12,
-                                              const std::vector<std::vector<double>>& C21,
-                                              const std::vector<std::vector<double>>& C22) {
-    int n = C11.size();
-    int m = 2 * n;
+std::vector<std::vector<double>> collectMatrix(const std::vector<std::vector<double>> &quarter1,
+    const std::vector<std::vector<double>> &quarter2, const std::vector<std::vector<double>> &quarter3,
+    const std::vector<std::vector<double>> &quarter4, int size) {
 
-    std::vector<std::vector<double>> C(m, std::vector<double>(m));
+    int newSize = size / 2;
+    std::vector<std::vector<double>> colMatrix(size, std::vector<double>(size, 0));
 
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            C[i][j] = C11[i][j];
-            C[i][j + n] = C12[i][j];
-            C[i + n][j] = C21[i][j];
-            C[i + n][j + n] = C22[i][j];
+    for (int i = 0; i < newSize; i++) {
+        for (int j = 0; j < newSize; j++) {
+            colMatrix[i][j] = quarter1[i][j];
+            colMatrix[i][j + newSize] = quarter3[i][j];
+            colMatrix[i + newSize][j] = quarter2[i][j];
+            colMatrix[i + newSize][j + newSize] = quarter4[i][j];
         }
     }
 
-    return C;
+    return colMatrix;
 }
 
-std::vector<std::vector<double>> strassen_mult(const std::vector<std::vector<double>>& A,
-                                               const std::vector<std::vector<double>>& B) {
-    int n = A.size();
+std::vector<std::vector<double>> SeqMulMatrix(const std::vector<std::vector<double>> &SeqA,
+    const std::vector<std::vector<double>> &SeqB, int n) {
 
-    if (n == 1) {
-        std::vector<std::vector<double>> C(1, std::vector<double>(1));
-        C[0][0] = A[0][0] * B[0][0];
-        return C;
+    std::vector<std::vector<double>> resMatrix(n, std::vector<double>(n, 0));
+
+    for (int j = 0; j < n; j++)
+        for (int i = 0; i < n; i++)
+            for (int k = 0; k < n; k++)
+                resMatrix[j][i] += SeqA[j][k] * SeqB[k][i];
+
+    return resMatrix;
+}
+
+std::vector<std::vector<double>> Strassen(const std::vector<std::vector<double>> &StrA,
+    const std::vector<std::vector<double>> &StrB, int size) {
+
+    std::vector<std::vector<double>> strMatrix(size, std::vector<double>(size, 0));
+
+    if (size == 1) {
+        strMatrix[0][0] = StrA[0][0] * StrB[0][0];
+        return strMatrix;
     }
 
-    std::vector<std::vector<double>> C(n, std::vector<double>(n));
+    int newSize = size / 2;
+    std::vector<double> inner(newSize);
+    std::vector<std::vector<double>>
+        A11(newSize, inner), A12(newSize, inner), A21(newSize, inner), A22(newSize, inner),
+        B11(newSize, inner), B12(newSize, inner), B21(newSize, inner), B22(newSize, inner),
+        C11(newSize, inner), C12(newSize, inner), C21(newSize, inner), C22(newSize, inner),
+        M1(newSize, inner), M2(newSize, inner), M3(newSize, inner), M4(newSize, inner),
+        M5(newSize, inner), M6(newSize, inner), M7(newSize, inner);
 
-    std::vector<std::vector<double>> A11, A12, A21, A22;
-    std::vector<std::vector<double>> B11, B12, B21, B22;
-    A11 = subMatrix(A, 1, 1, n);
-    A12 = subMatrix(A, 1, 2, n);
-    A21 = subMatrix(A, 2, 1, n);
-    A22 = subMatrix(A, 2, 2, n);
-    B11 = subMatrix(B, 1, 1, n);
-    B12 = subMatrix(B, 1, 2, n);
-    B21 = subMatrix(B, 2, 1, n);
-    B22 = subMatrix(B, 2, 2, n);
+    A11 = subMatrix(StrA, 1, 1, size);
+    A12 = subMatrix(StrA, 1, 2, size);
+    A21 = subMatrix(StrA, 2, 1, size);
+    A22 = subMatrix(StrA, 2, 2, size);
+    B11 = subMatrix(StrB, 1, 1, size);
+    B12 = subMatrix(StrB, 1, 2, size);
+    B21 = subMatrix(StrB, 2, 1, size);
+    B22 = subMatrix(StrB, 2, 2, size);
 
-    std::vector<std::vector<double>> P1 = strassen_mult(matrix_addition(A11, A22), matrix_addition(B11, B22));
-    std::vector<std::vector<double>> P2 = strassen_mult(matrix_addition(A21, A22), B11);
-    std::vector<std::vector<double>> P3 = strassen_mult(A11, matrix_subtraction(B12, B22));
-    std::vector<std::vector<double>> P4 = strassen_mult(A22, matrix_subtraction(B21, B11));
-    std::vector<std::vector<double>> P5 = strassen_mult(matrix_addition(A11, A12), B22);
-    std::vector<std::vector<double>> P6 = strassen_mult(matrix_subtraction(A21, A11), matrix_addition(B11, B12));
-    std::vector<std::vector<double>> P7 = strassen_mult(matrix_subtraction(A12, A22), matrix_addition(B21, B22));
+    M1 = Strassen(sumMatrix(A11, A22, newSize, true), sumMatrix(B11, B22, newSize, true), newSize);
+    M2 = Strassen(sumMatrix(A21, A22, newSize, true), B11, newSize);
+    M3 = Strassen(A11, sumMatrix(B12, B22, newSize, false), newSize);
+    M4 = Strassen(A22, sumMatrix(B21, B11, newSize, false), newSize);
+    M5 = Strassen(sumMatrix(A11, A12, newSize, true), B22, newSize);
+    M6 = Strassen(sumMatrix(A21, A11, newSize, false), sumMatrix(B11, B12, newSize, true), newSize);
+    M7 = Strassen(sumMatrix(A12, A22, newSize, false), sumMatrix(B21, B22, newSize, true), newSize);
 
-    A11.clear(); A12.clear(); A21.clear(); A22.clear();
-    B11.clear(); B12.clear(); B21.clear(); B22.clear();
+    C11 = sumMatrix(sumMatrix(M1, M4, newSize, true), sumMatrix(M7, M5, newSize, false), newSize, true);
+    C12 = sumMatrix(M3, M5, newSize, true);
+    C21 = sumMatrix(M2, M4, newSize, true);
+    C22 = sumMatrix(sumMatrix(M1, M2, newSize, false), sumMatrix(M3, M6, newSize, true), newSize, true);
 
-    std::vector<std::vector<double>> C11 = matrix_addition(matrix_subtraction(matrix_addition(P1, P4), P5), P7);
-    std::vector<std::vector<double>> C12 = matrix_addition(P3, P5);
-    std::vector<std::vector<double>> C21 = matrix_addition(P2, P4);
-    std::vector<std::vector<double>> C22 = matrix_subtraction(matrix_subtraction(matrix_addition(P1, P3), P2), P6);
+    strMatrix = collectMatrix(C11, C21, C12, C22, size);
 
-    P1.clear(); P2.clear(); P3.clear(); P4.clear(); P5.clear(); P6.clear() ; P7.clear();
-    C = merge_matrix(C11, C12, C21, C22);
-
-    C11.clear(); C12.clear(); C21.clear(); C22.clear();
-    return C;
+    return strMatrix;
 }
 // kiselev_i
