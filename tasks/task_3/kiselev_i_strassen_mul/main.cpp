@@ -15,11 +15,11 @@ TEST(strassen_mul_test, test_2x2_of_1) {
     std::vector<std::vector<double>> B = { { 1.0, 1.0 },
         { 1.0, 1.0 } };
     std::vector<std::vector<double>> CSeq(N, std::vector<double>(N));
-    CSeq = matrix_multiplication(A, B);
+    CSeq = SeqMulMatrix(A, B, N);
 
     if (rankProc == 0) {
         std::vector<std::vector<double>> CStr(N, std::vector<double>(N));
-        CStr = strassen_mult(A, B);
+        CStr = Strassen(A, B, N);
         ASSERT_EQ(CStr, CSeq);
     }
 }
@@ -41,11 +41,11 @@ TEST(strassen_mul_test, test_4x4_of_1) {
        { 1.0, 1.0, 1.0, 1.0 },
        { 1.0, 1.0, 1.0, 1.0 } };
     std::vector<std::vector<double>> CSeq(N, std::vector<double>(N));
-    CSeq = matrix_multiplication(A, B);
+    CSeq = SeqMulMatrix(A, B, N);
 
     if (rankProc == 0) {
         std::vector<std::vector<double>> CStr(N, std::vector<double>(N));
-        CStr = strassen_mult(A, B);
+        CStr = Strassen(A, B, N);
         ASSERT_EQ(CStr, CSeq);
     }
 }
@@ -67,11 +67,11 @@ TEST(strassen_mul_test, test_4x4_of_progression) {
        { 9.0, 10.0, 11.0, 12.0 },
        { 13.0, 14.0, 15.0, 16.0 } };
     std::vector<std::vector<double>> CSeq(N, std::vector<double>(N));
-    CSeq = matrix_multiplication(A, B);
+    CSeq = SeqMulMatrix(A, B, N);
 
     if (rankProc == 0) {
         std::vector<std::vector<double>> CStr(N, std::vector<double>(N));
-        CStr = strassen_mult(A, B);
+        CStr = Strassen(A, B, N);
         ASSERT_EQ(CStr, CSeq);
     }
 }
@@ -94,11 +94,11 @@ TEST(strassen_mul_test, test_4x4_of_random) {
        { 76.0, 91.0, 19.0, 34.0 } };
 
     std::vector<std::vector<double>> CSeq(N, std::vector<double>(N));
-    CSeq = matrix_multiplication(A, B);
+    CSeq = SeqMulMatrix(A, B, N);
 
     if (rankProc == 0) {
         std::vector<std::vector<double>> CStr(N, std::vector<double>(N));
-        CStr = strassen_mult(A, B);
+        CStr = Strassen(A, B, N);
         ASSERT_EQ(CStr, CSeq);
     }
 }
@@ -133,11 +133,11 @@ TEST(strassen_mul_test, test_10x10_of_random) {
         { 45.0, 3.0, 74.0, 48.0, 87.0, 45.0, 90.0, 86.0, 5.0, 37.0 } };
 
     std::vector<std::vector<double>> CSeq(N, std::vector<double>(N));
-    CSeq = matrix_multiplication(A, B);
+    CSeq = SeqMulMatrix(A, B, N);
 
     if (rankProc == 0) {
         std::vector<std::vector<double>> CStr(N, std::vector<double>(N));
-        CStr = strassen_mult(A, B);
+        CStr = Strassen(A, B, N);
         ASSERT_EQ(CStr, CSeq);
     }
 }
