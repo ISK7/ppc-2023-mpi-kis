@@ -1,6 +1,6 @@
 // Copyright 2023 Kiselev Igor
 #include <gtest/gtest.h>
-#include "./mul_tape_matrix.h"
+#include "task_2/kiselev_i_mul_tape_matrix/mul_tape_matrix.h"
 
 TEST(MulMatrix_test, test_3x3_of_1) {
     int rankProc = 0;
@@ -18,7 +18,7 @@ TEST(MulMatrix_test, test_3x3_of_1) {
             vecB[i] = 1;
         }
     }
-    std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
+    std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, m);
     if (rankProc == 0) {
         std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
         ASSERT_EQ(resPar, resSeq);
@@ -43,7 +43,7 @@ TEST(MulMatrix_test, test_3x3_of_progression) {
     std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
-        std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
+        std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, m);
         ASSERT_EQ(resPar, resSeq);
     }
 }
@@ -63,7 +63,7 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_1) {
     std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
-        std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
+        std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, m);
         ASSERT_EQ(resPar, resSeq);
     }
 }
@@ -86,7 +86,7 @@ TEST(MulMatrix_test, test_3x4_and_4x3_of_progression) {
     std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
-        std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
+        std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, m);
         ASSERT_EQ(resPar, resSeq);
     }
 }
@@ -109,7 +109,7 @@ TEST(MulMatrix_test, test_4x6_and_6x4_of_progression) {
     std::vector<int> resSeq = SeqMulMatrix(vecA, vecB, n, m, n);
 
     if (rankProc == 0) {
-        std::vector<int> resPar = ParMulMatrix(vecA, vecB, n, m);
+        std::vector<int> resPar = ParMulMatrix(&vecA, &vecB, n, m);
         ASSERT_EQ(resPar, resSeq);
     }
 }
