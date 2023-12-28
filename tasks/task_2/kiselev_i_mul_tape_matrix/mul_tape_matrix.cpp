@@ -1,5 +1,5 @@
 // Copyright 2023 Kiselev Igor
-#include "mul_tape_matrix.h"
+#include "task_2/kiselev_i_mul_tape_matrix/mul_tape_matrix.h"
 
 std::vector<int> SeqMulMatrix(const std::vector<int> &a, const std::vector<int> &b, int n, int m) {
     std::vector<int> resMatrix(n * n);
