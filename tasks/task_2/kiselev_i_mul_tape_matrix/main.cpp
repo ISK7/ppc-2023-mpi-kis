@@ -10,9 +10,9 @@ TEST(MulMatrix_test, test_3x3_of_1) {
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
+    std::vector<int> vecA(n * m);
+    std::vector<int> vecB(m * n);
     if (rankProc == 0) {
-        std::vector<int> vecA(n * m);
-        std::vector<int> vecB(m * n);
         for (int i = 0; i < n * m; i++) {
             vecA[i] = 1;
             vecB[i] = 1;
