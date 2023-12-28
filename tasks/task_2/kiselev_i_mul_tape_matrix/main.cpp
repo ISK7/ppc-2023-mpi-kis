@@ -110,14 +110,22 @@ TEST(MulMatrix_test, test_4x6_and_6x4_of_progression) {
 }
 
 int main(int argc, char** argv) {
-    int result = 0;
-    ::testing::InitGoogleTest(&argc, argv);
-    ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+  int result = 0;
+  ::testing::InitGoogleTest(&argc, argv);
+  ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
 
-    if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
-        MPI_Abort(MPI_COMM_WORLD, -1);
-    result = RUN_ALL_TESTS();
-    MPI_Finalize();
+  if (MPI_Init(&argc, &argv) != MPI_SUCCESS)
+      MPI_Abort(MPI_COMM_WORLD, -1);
 
-    return result;
+  int rankProc;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
+
+  if (rankProc != 0) {
+      delete listeners.Release(listeners.default_result_printer());
+  }
+
+  result = RUN_ALL_TESTS();
+  MPI_Finalize();
+
+  return result;
 }
