@@ -16,14 +16,14 @@ std::vector<int> SeqMulMatrix(const std::vector<int>& a, const std::vector<int>&
     return resMatrix;
 }
 
-std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b, int an, int am) {
+std::vector<int> ParMulMatrix(const std::vector<int> mat_a, const std::vector<int> mat_b, int an, int am) {
     int sizeProc, rankProc;
     MPI_Comm_size(MPI_COMM_WORLD, &sizeProc);
     MPI_Comm_rank(MPI_COMM_WORLD, &rankProc);
 
     if (sizeProc > an || sizeProc == 1) {
         return rankProc == 0 ?
-            SeqMulMatrix(a, b, an, am, an) :
+            SeqMulMatrix(mat_a, mat_b, an, am, an) :
             std::vector<int>{};
     }
 
@@ -42,18 +42,16 @@ std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b
                 chainB += reminder;
             }
 
-            std::vector<int> send_vector_b(chain_s * bn, 0);
-            for (int i = 0; i < send_vector_b.size(); i++) {
+            std::vector<int> sendB(chain_s * bn, 0);
+            for (int i = 0; i < sendB.size(); i++) {
                 int chain_n = i % chain_s;
                 int chain_m = (i / chain_s) * bm;
 
-                send_vector_b[i] =
-                    b[chainB + chain_n + chain_m];
+                sendB[i] = mat_b[chainB + chain_n + chain_m];
             }
 
-            MPI_Send(a.data() + chainA, chain_s * am, MPI_INT, proc, 1, MPI_COMM_WORLD);
-            MPI_Send(send_vector_b.data(), send_vector_b.size(),
-                MPI_INT, proc, 2, MPI_COMM_WORLD);
+            MPI_Send(mat_a.data() + chainA, chain_s * am, MPI_INT, proc, 1, MPI_COMM_WORLD);
+            MPI_Send(sendB.data(), sendB.size(), MPI_INT, proc, 2, MPI_COMM_WORLD);
         }
     }
     int lSize = (chain_s + reminder) * am;
@@ -65,8 +63,8 @@ std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b
         for (int i = 0; i < lSize; i++) {
             int chain_n = i % (chain_s + reminder);
             int chain_m = (i / (chain_s + reminder)) * bm;
-            locB[i] = b[chain_n + chain_m];
-            locA[i] = a[i];
+            locB[i] = mat_b[chain_n + chain_m];
+            locA[i] = mat_a[i];
         }
     } else {
         MPI_Status status;
@@ -86,14 +84,14 @@ std::vector<int> ParMulMatrix(const std::vector<int> a, const std::vector<int> b
         int loc_an = rankProc == 0 ? chain_s + reminder : chain_s;
         int loc_bm = (rankProc + i) % sizeProc == 0 ? chain_s + reminder : chain_s;
 
-        std::vector<int> tmp_res = SeqMulMatrix(locA, locB, loc_an, am, loc_bm);
+        std::vector<int> tRes = SeqMulMatrix(locA, locB, loc_an, am, loc_bm);
 
         int chainRes = rankProc == 0 ? 0 : (rankProc * chain_s + reminder) * an;
-        for (int j = 0; j < tmp_res.size(); j++) {
+        for (int j = 0; j < tRes.size(); j++) {
             int chain_n = locB[lSize] + j % loc_bm;
             int chain_m = (j / loc_bm) * an;
 
-            locRes[chainRes + chain_n + chain_m] += tmp_res[j];
+            locRes[chainRes + chain_n + chain_m] += tRes[j];
         }
 
         MPI_Send(locB.data(), static_cast<int>(locB.size()),
