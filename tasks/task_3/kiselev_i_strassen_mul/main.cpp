@@ -34,7 +34,7 @@ TEST(strassen_mul_test, test_4x4_of_1) {
 
     std::vector<std::vector<double>> A = { { 1.0, 1.0, 1.0, 1.0 },
        { 1.0, 1.0, 1.0, 1.0 },
-       { 1.0, 1.0, 1.0, 1.0 }, 
+       { 1.0, 1.0, 1.0, 1.0 },
        { 1.0, 1.0, 1.0, 1.0 } };
     std::vector<std::vector<double>> B = { { 1.0, 1.0, 1.0, 1.0 },
        { 1.0, 1.0, 1.0, 1.0 },
